@@ -43,7 +43,9 @@ func SetRoutes(r *mux.Router) {
     mr := &MockRouter{}
     // manage
     manage := r.PathPrefix("/mockmanage").Subrouter()
-    manage.HandleFunc("/reload", GetManageReloadHandler(mr))
+    manage.HandleFunc("/upload", GetUploadHandler())
+    manage.HandleFunc("/download", GetDownloadHandler())
+    manage.HandleFunc("/reload", GetReloadHandler(mr))
 
     // api
     api := r.PathPrefix("/mockapi").Subrouter()
