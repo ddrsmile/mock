@@ -12,6 +12,7 @@ import (
 
 const (
     ResourceDir = "../resources"
+    DefaultLoadFileName = "default.json"
     DefaultDownloadFileName = "default.json"
     DefaultUploadFileName = "uploaded.json"
 )
@@ -59,11 +60,15 @@ func GetDownloadHandler() http.HandlerFunc {
 
 func GetReloadHandler(mockRouter *MockRouter) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        data := map[string]interface{}{"status": "mock api router is reload."}
+        fileName := r.FormValue("fileName")
+        if fileName == "" {
+            fileName = DefaultLoadFileName
+        }
+        data := map[string]interface{}{"status": "mock api router is reload with" + fileName}
         statusCode := http.StatusOK
-        router, err := GetApiRouter()
+        router, err := GetApiRouter(fileName)
         if err != nil {
-            data["status"] = "fail to reload mock api router"
+            data["status"] = "fail to reload mock api router with " + fileName
             statusCode = http.StatusBadRequest
         } else {
             mockRouter.Swap(router)

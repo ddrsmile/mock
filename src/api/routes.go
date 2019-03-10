@@ -6,6 +6,7 @@ import (
     "io/ioutil"
     "net/http"
     "os"
+    "path"
     "sync"
 )
 
@@ -24,8 +25,8 @@ func (mr *MockRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     mr.r.ServeHTTP(w, r)
 }
 
-func getItems() ([]Item, error) {
-    f, err := os.Open("../resources/default.json")
+func getItems(fileName string) ([]Item, error) {
+    f, err := os.Open(path.Join(ResourceDir, fileName))
     defer f.Close()
     if err != nil {
         return nil, err
@@ -43,6 +44,7 @@ func SetRoutes(r *mux.Router) {
     mr := &MockRouter{}
     // manage
     manage := r.PathPrefix("/mockmanage").Subrouter()
+    manage.Use(SetJsonContentType)
     manage.HandleFunc("/upload", GetUploadHandler())
     manage.HandleFunc("/download", GetDownloadHandler())
     manage.HandleFunc("/reload", GetReloadHandler(mr))
@@ -52,13 +54,13 @@ func SetRoutes(r *mux.Router) {
     api.Handle("/", mr)
     api.Handle("/{_:.*}", mr)
     // set api router
-    apiRouter, _ := GetApiRouter()
+    apiRouter, _ := GetApiRouter(DefaultLoadFileName)
     mr.Swap(apiRouter)
 }
 
-func GetApiRouter() (*mux.Router, error) {
+func GetApiRouter(fileName string) (*mux.Router, error) {
     r := mux.NewRouter().PathPrefix("/mockapi").Subrouter()
-    items, err := getItems()
+    items, err := getItems(fileName)
     if err != nil {
         return nil, err
     }
