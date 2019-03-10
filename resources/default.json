@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/test",
+    "methods": ["GET"],
+    "response": {
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "content": "{\"test\": \"test content\"}"
+    }
+  },
+  {
+    "path": "/test3",
+    "methods": ["GET"],
+    "response": {
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "content": "{\"test\": \"test content2\"}"
+    }
+  }
+]
